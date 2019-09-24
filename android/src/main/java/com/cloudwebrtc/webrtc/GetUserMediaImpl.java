@@ -671,7 +671,9 @@ class GetUserMediaImpl{
         int fps
             = videoConstraintsMandatory.hasKey("minFrameRate")
                 ? videoConstraintsMandatory.getInt("minFrameRate")
-                : DEFAULT_FPS;
+                : videoConstraintsMandatory.hasKey("frameRate")
+                ? videoConstraintsMandatory.getInt("frameRate")
+                : DEFAULT_FPS ;
 
         videoCapturer.startCapture(width, height, fps);
 
