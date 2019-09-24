@@ -24,6 +24,7 @@
 @property (nonatomic) int _targetWidth;
 @property (nonatomic) int _targetHeight;
 @property (nonatomic) int _targetFps;
+@property (nonatomic) int _fpsForced;
 
 - (RTCMediaStream*)streamForId:(NSString*)streamId;
 

@@ -261,6 +261,7 @@ typedef void (^NavigatorUserMediaSuccessCallback)(RTCMediaStream *mediaStream);
     self._targetWidth = 1280;
     self._targetHeight = 720;
     self._targetFps = 30;
+    self._fpsForced = 1;
     
     id mandatory = videoConstraints[@"mandatory"];
     // constraints.video.mandatory
@@ -287,13 +288,25 @@ typedef void (^NavigatorUserMediaSuccessCallback)(RTCMediaStream *mediaStream);
                 self._targetFps = possibleFps;
             }
         }
+        
+        id fpsForcedConstraint = mandatory[@"frameRate"];
+        if ([fpsForcedConstraint isKindOfClass:[NSString class]]) {
+            int fps = [fpsForcedConstraint intValue];
+            if (fps > 1) {
+                self._fpsForced = fps;
+            }
+        }
     }
-    
-    if (videoDevice) {
+if (videoDevice) {
         RTCVideoSource *videoSource = [self.peerConnectionFactory videoSource];
         self.videoCapturer = [[RTCCameraVideoCapturer alloc] initWithDelegate:videoSource];
         AVCaptureDeviceFormat *selectedFormat = [self selectFormatForDevice:videoDevice];
-        NSInteger selectedFps = [self selectFpsForFormat:selectedFormat];
+        NSInteger selectedFps;
+       if(self._fpsForced > 1){
+            selectedFps = self._fpsForced;
+       }else{
+           selectedFps = [self selectFpsForFormat:selectedFormat];
+       }
         [self.videoCapturer startCaptureWithDevice:videoDevice format:selectedFormat fps:selectedFps completionHandler:^(NSError *error) {
             if (error) {
                 NSLog(@"Start capture error: %@", [error localizedDescription]);
